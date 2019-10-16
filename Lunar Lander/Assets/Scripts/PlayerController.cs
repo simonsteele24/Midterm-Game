@@ -8,20 +8,24 @@ assignment is entirely our own work.
 
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, CollisionEvent
 {
     // Particle classes
     private Particle2D particle;
+    public static PlayerController player;
 
     // Floats
     public float speed;
     public float thrustSpeed;
     public float startingHorizontalVelocity;
 
+    public float maximumHorizontalSpeedToPass = 5.0f;
+    public float maximumVerticalSpeedToPass = 5.0f;
 
     // Start is called before the first frame update
     void Start()
     {
+        player = this;
         particle = GetComponent<Particle2D>();
         particle.velocity = new Vector2(startingHorizontalVelocity, 0);
     }
@@ -76,5 +80,15 @@ public class PlayerController : MonoBehaviour
     {
         UIManager.ui.ChangeHorizontalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.x)).ToString());
         UIManager.ui.ChangeVerticalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.y)).ToString());
+    }
+
+    bool CheckForProperCollision()
+    {
+        return maximumVerticalSpeedToPass <= particle.velocity.x && maximumHorizontalSpeedToPass <= particle.velocity.y;
+    }
+
+    public void HandleCollision(CollisionHull2D a, CollisionHull2D b)
+    {
+        Debug.Log("Here");
     }
 }

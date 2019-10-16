@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 // Collision Hull type enum
 public enum CollisionHullType2D
@@ -122,19 +123,7 @@ public class CollisionManager : MonoBehaviour
 
                     if (collision != null)
                     {
-                        bool isDuplicate = false;
-                        for (int i = 0; i < collisions.Count; i++)
-                        {
-                            if ((collisions[i].a == particles[y] && collisions[i].b == particles[x]) || (collisions[i].a == particles[x] && collisions[i].b == particles[y]))
-                            {
-                                isDuplicate = true;
-                            }
-                        }
-
-                        if (!isDuplicate)
-                        {
-                            collisions.Add(collision);
-                        }
+                        collisions.Add(collision);
                     }
                 }
             }
@@ -240,6 +229,8 @@ public class CollisionManager : MonoBehaviour
             return null;
         }
 
+        ExecuteEvents.Execute<CollisionEvent>(PlayerController.player.gameObject, null, (x, y) => x.HandleCollision(a, b));
+
         // Return full details of the Collision list if the two collide
         return new CollisionInfo(a, b, penetration);
     }
@@ -283,8 +274,6 @@ public class CollisionManager : MonoBehaviour
             // If no, then return nothing
             return null;
         }
-
-        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         // Return full details of the Collision list if the two collide
         return new CollisionInfo(a, b, CollisionResolution.GetFinalPenetration(overlaps));
@@ -513,6 +502,10 @@ public class CollisionManager : MonoBehaviour
             }
         }
 
+        if (!(shapeAMin <= shapeBMax && shapeBMin <= shapeAMax))
+        {
+            return Mathf.Infinity;
+        }
 
         // Is the B shape min greater than the A shape maximum
         if (shapeBMin > shapeAMin)
