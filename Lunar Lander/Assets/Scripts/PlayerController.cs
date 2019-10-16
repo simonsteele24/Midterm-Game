@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
         // Has the D key been pressed?
@@ -54,5 +54,16 @@ public class PlayerController : MonoBehaviour
         {
             particle.AddForce(new Vector2(0, thrustSpeed));
         }
+    }
+
+    private void Update()
+    {
+        UpdateTexts();
+    }
+
+    void UpdateTexts()
+    {
+        UIManager.ui.ChangeHorizontalSpeedText((GetComponent<Particle2D>().velocity.x).ToString());
+        UIManager.ui.ChangeVerticalSpeedText((GetComponent<Particle2D>().velocity.y).ToString());
     }
 }

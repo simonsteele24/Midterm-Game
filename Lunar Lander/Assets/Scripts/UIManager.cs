@@ -17,7 +17,7 @@ public class UIManager : MonoBehaviour
 
     public void ChangeVerticalSpeedText(string newText)
     {
-        horizontalText.text = newText;
+        verticalText.text = newText;
     }
 
     public void ChangeHorizontalSpeedText(string newText)
