@@ -16,13 +16,14 @@ public class PlayerController : MonoBehaviour
     // Floats
     public float speed;
     public float thrustSpeed;
-    public float startingVerticalVelocity;
+    public float startingHorizontalVelocity;
 
 
     // Start is called before the first frame update
     void Start()
     {
         particle = GetComponent<Particle2D>();
+        particle.velocity = new Vector2(startingHorizontalVelocity, 0);
     }
 
 
@@ -36,7 +37,7 @@ public class PlayerController : MonoBehaviour
         {
         
             // If yes, then add torque in the right direction
-            particle.ApplyTorque(new Vector2(-speed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
+            particle.ApplyTorque(new Vector2(-thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
 
@@ -45,14 +46,16 @@ public class PlayerController : MonoBehaviour
         {
 
             // If yes, then add torque in the left direction
-            particle.ApplyTorque(new Vector2(speed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
+            particle.ApplyTorque(new Vector2(thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
 
 
         if (Input.GetKey(KeyCode.W))
         {
-            particle.AddForce(new Vector2(0, thrustSpeed));
+
+            particle.AddForce(speed * transform.up);
+
         }
     }
 
@@ -61,9 +64,17 @@ public class PlayerController : MonoBehaviour
         UpdateTexts();
     }
 
+    Vector2 FindDirectionalVector(float rotation)
+    {
+        float x = -Mathf.Sin(rotation);
+        float y = Mathf.Cos(rotation);
+        Debug.Log(new Vector2(x, y));
+        return new Vector2(x, y);
+    }
+
     void UpdateTexts()
     {
-        UIManager.ui.ChangeHorizontalSpeedText((GetComponent<Particle2D>().velocity.x).ToString());
-        UIManager.ui.ChangeVerticalSpeedText((GetComponent<Particle2D>().velocity.y).ToString());
+        UIManager.ui.ChangeHorizontalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.x)).ToString());
+        UIManager.ui.ChangeVerticalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.y)).ToString());
     }
 }

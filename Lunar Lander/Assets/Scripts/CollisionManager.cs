@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // Collision Hull type enum
 public enum CollisionHullType2D
@@ -282,6 +283,8 @@ public class CollisionManager : MonoBehaviour
             // If no, then return nothing
             return null;
         }
+
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
 
         // Return full details of the Collision list if the two collide
         return new CollisionInfo(a, b, CollisionResolution.GetFinalPenetration(overlaps));
