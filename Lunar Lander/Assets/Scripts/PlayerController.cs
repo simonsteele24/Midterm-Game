@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     // Particle classes
     private Particle2D particle;
     public static PlayerController player;
+    public GameObject flame;
 
     // Floats
     public float speed;
@@ -64,7 +65,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
             particle.ApplyTorque(new Vector2(thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
-        else if (particle.rotation > maxRotation || particle.rotation < -maxRotation && GameManager.manager.isRunning)
+        else if ((particle.rotation > maxRotation || particle.rotation < -maxRotation) && GameManager.manager.isRunning)
         {
             particle.angularVelocity = 0;
         }
@@ -73,6 +74,11 @@ public class PlayerController : MonoBehaviour, CollisionEvent
         {
             fuelLeft -= amountOfFuelLostPerBurn;
             particle.AddForce(speed * transform.up);
+            flame.SetActive(true);
+        }
+        else
+        {
+            flame.SetActive(false);
         }
 
         if (Input.GetKey(KeyCode.S) && fuelLeft > 0)
@@ -123,6 +129,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
         transform.position = initialStartingSpot;
         particle.angularVelocity = 0;
         transform.rotation = Quaternion.identity;
+        particle.rotation = 0;
         GetComponent<Particle2D>().position = initialStartingSpot;
         GetComponent<AABB>().SetPosition(initialStartingSpot);
         particle.velocity = new Vector2(startingHorizontalVelocity, 0);
