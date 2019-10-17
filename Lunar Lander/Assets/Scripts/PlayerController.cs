@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     public float amountOfFuelLostPerBurn;
     public float maximumHorizontalSpeedToPass = 5.0f;
     public float maximumVerticalSpeedToPass = 5.0f;
+    public float maxRotation = 180.0f;
 
     // Vector 2's
     [HideInInspector] public Vector2 initialStartingSpot;
@@ -49,28 +50,35 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     {
 
         // Has the D key been pressed?
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) && particle.rotation >= -maxRotation)
         {
-        
+            Debug.Log("Move");
             // If yes, then add torque in the right direction
             particle.ApplyTorque(new Vector2(-thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
-
-        // Has the A key been pressed?
-        if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKey(KeyCode.A) && particle.rotation <= maxRotation)
         {
-
+            Debug.Log("Move");
             // If yes, then add torque in the left direction
             particle.ApplyTorque(new Vector2(thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
-
+        else if (particle.rotation > maxRotation || particle.rotation < -maxRotation)
+        {
+            particle.angularVelocity = 0;
+        }
 
         if (Input.GetKey(KeyCode.W) && fuelLeft > 0)
         {
             fuelLeft -= amountOfFuelLostPerBurn;
             particle.AddForce(speed * transform.up);
+        }
+
+        if (Input.GetKey(KeyCode.S) && fuelLeft > 0)
+        {
+            fuelLeft -= amountOfFuelLostPerBurn;
+            particle.AddForce(speed * -transform.up);
         }
     }
 
