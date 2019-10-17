@@ -18,9 +18,13 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     public float speed;
     public float thrustSpeed;
     public float startingHorizontalVelocity;
-
+    public float fuelLeft;
+    public float amountOfFuelLostPerBurn;
     public float maximumHorizontalSpeedToPass = 5.0f;
     public float maximumVerticalSpeedToPass = 5.0f;
+
+    // Vector 2's
+    [HideInInspector] public Vector2 initialStartingSpot;
 
     // Start is called before the first frame update
     void Start()
@@ -28,8 +32,16 @@ public class PlayerController : MonoBehaviour, CollisionEvent
         player = this;
         particle = GetComponent<Particle2D>();
         particle.velocity = new Vector2(startingHorizontalVelocity, 0);
+        initialStartingSpot = transform.position;
     }
 
+    void OnEnable()
+    {
+        if (fuelLeft <= 0)
+        {
+            fuelLeft = 100;
+        }
+    }
 
 
     // Update is called once per frame
@@ -55,11 +67,10 @@ public class PlayerController : MonoBehaviour, CollisionEvent
         }
 
 
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.W) && fuelLeft > 0)
         {
-
+            fuelLeft -= amountOfFuelLostPerBurn;
             particle.AddForce(speed * transform.up);
-
         }
     }
 
@@ -80,15 +91,25 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     {
         UIManager.ui.ChangeHorizontalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.x)).ToString());
         UIManager.ui.ChangeVerticalSpeedText((Mathf.Abs(GetComponent<Particle2D>().velocity.y)).ToString());
+        UIManager.ui.ChangeFuelText(fuelLeft.ToString());
     }
 
     bool CheckForProperCollision()
     {
-        return maximumVerticalSpeedToPass <= particle.velocity.x && maximumHorizontalSpeedToPass <= particle.velocity.y;
+        return maximumHorizontalSpeedToPass >= particle.velocity.x && maximumVerticalSpeedToPass >= particle.velocity.y;
     }
 
     public void HandleCollision(CollisionHull2D a, CollisionHull2D b)
     {
-        Debug.Log("Here");
+        GameManager.manager.GiveLanderLandingStatus(CheckForProperCollision());
+        gameObject.SetActive(false);
+    }
+
+    public void ResetPosition()
+    {
+        transform.position = initialStartingSpot;
+        GetComponent<Particle2D>().position = initialStartingSpot;
+        GetComponent<AABB>().SetPosition(initialStartingSpot);
+        particle.velocity = new Vector2(startingHorizontalVelocity, 0);
     }
 }
