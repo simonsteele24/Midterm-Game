@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class CollisionResolution : MonoBehaviour
 {
@@ -12,7 +13,8 @@ public class CollisionResolution : MonoBehaviour
         Vector2 differenceOfPosition = (shapeA.GetPosition() - shapeB.GetPosition()).normalized;
 
         // Return the dot product of both velocity and position
-        return Vector2.Dot(differenceOfVelocity, differenceOfPosition);
+        // Since we are dealing with planes, there is no reason to check the X axis
+        return differenceOfPosition.y * differenceOfVelocity.y * 50;
     }
 
 
@@ -44,20 +46,6 @@ public class CollisionResolution : MonoBehaviour
         // Get the new seperating velocity
         float newSeperatingVelocity = -collision.separatingVelocity * CollisionManager.UNIVERSAL_COEFFICIENT_OF_RESTITUTION;
 
-        // Check the velocity buildup due to acceleration only.
-        Vector2 accCausedVelocity = collision.a.GetComponent<Particle2D>().acceleration - collision.b.GetComponent<Particle2D>().acceleration;
-        float accCausedSepVelocity = Vector2.Dot(accCausedVelocity, collision.normal) * Time.fixedDeltaTime;
-
-
-
-        // If we’ve got a closing velocity due to aceleration buildup,
-        // remove it from the new separating velocity.
-        if (accCausedSepVelocity < 0)
-        {
-            newSeperatingVelocity *= accCausedSepVelocity;
-            if (newSeperatingVelocity < 0) newSeperatingVelocity = 0;
-        }
-
 
         // Get the delta velocity between the new and old seperating velocity
         float deltaVelocity = newSeperatingVelocity - collision.separatingVelocity;
@@ -80,6 +68,8 @@ public class CollisionResolution : MonoBehaviour
         // Apply the new velocities to both particles
         collision.a.GetComponent<Particle2D>().velocity = collision.a.GetComponent<Particle2D>().velocity + impulsePerIMass * collision.a.GetComponent<Particle2D>().invMass;
         collision.b.GetComponent<Particle2D>().velocity = collision.b.GetComponent<Particle2D>().velocity + impulsePerIMass * -collision.b.GetComponent<Particle2D>().invMass;
+
+        ExecuteEvents.Execute<CollisionEvent>(PlayerController.player.gameObject, null, (x, y) => x.HandleCollision(collision.a, collision.b));
 
     }
 

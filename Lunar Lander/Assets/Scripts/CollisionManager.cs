@@ -49,7 +49,7 @@ public class CollisionManager : MonoBehaviour
 
             // Based on collision hulls, calculate the rest of the values
             separatingVelocity = CollisionResolution.CalculateSeparatingVelocity(a,b);
-            normal = (b.GetPosition() - a.GetPosition()).normalized;
+            normal = new Vector2(0,1);
             penetration = _penetration;
         }
 
@@ -123,7 +123,19 @@ public class CollisionManager : MonoBehaviour
 
                     if (collision != null)
                     {
-                        collisions.Add(collision);
+                        bool isDuplicate = false;
+                        for (int i = 0; i < collisions.Count; i++)
+                        {
+                            if ((collisions[i].a == particles[y] && collisions[i].b == particles[x]) || (collisions[i].a == particles[x] && collisions[i].b == particles[y]))
+                            {
+                                isDuplicate = true;
+                            }
+                        }
+
+                        if (!isDuplicate)
+                        {
+                            collisions.Add(collision);
+                        }
                     }
                 }
             }
@@ -228,8 +240,6 @@ public class CollisionManager : MonoBehaviour
             // If no, return nothing
             return null;
         }
-
-        ExecuteEvents.Execute<CollisionEvent>(PlayerController.player.gameObject, null, (x, y) => x.HandleCollision(a, b));
 
         // Return full details of the Collision list if the two collide
         return new CollisionInfo(a, b, penetration);

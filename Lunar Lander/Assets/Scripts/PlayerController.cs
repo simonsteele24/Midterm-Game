@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
             particle.ApplyTorque(new Vector2(thrustSpeed, 0), new Vector2(0, transform.position.y + particle.boxDimensions.y));
 
         }
-        else if (particle.rotation > maxRotation || particle.rotation < -maxRotation)
+        else if (particle.rotation > maxRotation || particle.rotation < -maxRotation && GameManager.manager.isRunning)
         {
             particle.angularVelocity = 0;
         }
@@ -109,13 +109,20 @@ public class PlayerController : MonoBehaviour, CollisionEvent
 
     public void HandleCollision(CollisionHull2D a, CollisionHull2D b)
     {
-        GameManager.manager.GiveLanderLandingStatus(CheckForProperCollision());
-        gameObject.SetActive(false);
+        bool checkApproval = CheckForProperCollision();
+
+        if (!checkApproval)
+        {
+            particle.angularVelocity = 1000;
+        }
+        GameManager.manager.GiveLanderLandingStatus(checkApproval);
     }
 
     public void ResetPosition()
     {
         transform.position = initialStartingSpot;
+        particle.angularVelocity = 0;
+        transform.rotation = Quaternion.identity;
         GetComponent<Particle2D>().position = initialStartingSpot;
         GetComponent<AABB>().SetPosition(initialStartingSpot);
         particle.velocity = new Vector2(startingHorizontalVelocity, 0);

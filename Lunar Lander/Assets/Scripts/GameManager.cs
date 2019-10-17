@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     public GameObject player;
 
     // Bools
-    bool isRunning = false;
+    public bool isRunning = false;
     bool isInEndGame = false;
 
     // Floats
@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour
 
         PlayerController.player.gameObject.SetActive(true);
         PlayerController.player.ResetPosition();
+        isRunning = true;
     }
 
     void CommenceGame()
@@ -85,11 +86,13 @@ public class GameManager : MonoBehaviour
 
     public void GiveLanderLandingStatus(bool status)
     {
+        isRunning = false;
         if (PlayerController.player.fuelLeft <= 0)
         {
             EndGame();
             isInEndGame = true;
             isRunning = false;
+            PlayerController.player.gameObject.SetActive(false);
             return;
         }
 
