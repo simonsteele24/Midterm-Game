@@ -5,7 +5,19 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    // Singleton Instances
     public static UIManager ui;
+
+    // Constant strings
+    public const string HORIZONTAL_NAME = "Horizontal";
+    public const string VERTICAL_NAME = "Vertical";
+    public const string FUEL_NAME = "Fuel";
+    public const string GOOD_NAME = "Good";
+    public const string BAD_NAME = "Bad";
+    public const string SCORE_NAME = "Score";
+    public const string STARTEND_NAME = "StartEnd";
+
+    // Texts
     public Text horizontalText;
     public Text verticalText;
     public Text fuelText;
@@ -14,54 +26,48 @@ public class UIManager : MonoBehaviour
     public Text scoreText;
     public Text startEndText;
 
+    // Dictionaries
+    Dictionary<string, Text> texts;
+
+
+
+
+
     // Start is called before the first frame update
     void Awake()
     {
+        // Initialize singleton instance
         ui = this;
+
+        // Initialize text dictionary
+        texts = new Dictionary<string, Text>();
+        texts.Add(HORIZONTAL_NAME, horizontalText);
+        texts.Add(VERTICAL_NAME, verticalText);
+        texts.Add(FUEL_NAME, fuelText);
+        texts.Add(GOOD_NAME, goodJobText);
+        texts.Add(BAD_NAME, badJobText);
+        texts.Add(SCORE_NAME, scoreText);
+        texts.Add(STARTEND_NAME, startEndText);
+
     }
 
-    public void ChangeVerticalSpeedText(string newText)
+
+
+
+
+    // This function changes a text (given by a key) to a given value
+    public void ChangeText(string key, string newText)
     {
-        verticalText.text = newText;
+        texts[key].text = newText;
     }
 
-    public void ChangeHorizontalSpeedText(string newText)
-    {
-        horizontalText.text = newText;
-    }
 
-    public void ChangeFuelText(string newText)
-    {
-        fuelText.text = newText;
-    }
 
-    public void ChangeScoreText(string newText)
-    {
-        scoreText.text = newText;
-    }
 
-    public void ToggleGoodJobText(bool toggleValue)
-    {
-        goodJobText.gameObject.SetActive(toggleValue);
-    }
 
-    public void ToggleBadJobText(bool toggleValue)
+    // This function toggles the good job text
+    public void ToggleTextObject(string key, bool toggleValue)
     {
-        badJobText.gameObject.SetActive(toggleValue);
-    }
-
-    public void DisplayEnd(string score)
-    {
-        startEndText.text = "Game Over. Final Score: " + score + "\n" + "Press 'R' To Restart";
-    }
-
-    public void DisplayStart()
-    {
-        startEndText.text = "Lunar Lander \n Press 'Space' To start";
-    }
-
-    public void ClearStartEndText()
-    {
-        startEndText.text = "";
+        texts[key].gameObject.SetActive(toggleValue);
     }
 }
