@@ -27,6 +27,8 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     public float amountOfFuelLostPerBurn;
     public float maximumHorizontalSpeedToPass = 5.0f;
     public float maximumVerticalSpeedToPass = 5.0f;
+    public float maximumRotationToPass = 10.0f;
+    public float minimumRotationToPass = -170.0f;
     public float maxRotation = 180.0f;
 
     // Vector 2's
@@ -156,7 +158,9 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     // This function checks if the player has properly landed the lunar lander
     bool CheckForProperCollision()
     {
-        return maximumHorizontalSpeedToPass >= particle.velocity.x && maximumVerticalSpeedToPass >= particle.velocity.y;
+        bool velocityCheck = maximumHorizontalSpeedToPass >= particle.velocity.x && maximumVerticalSpeedToPass >= particle.velocity.y;
+        bool rotationCheck = maximumRotationToPass >= particle.rotation && minimumRotationToPass <= particle.rotation;
+        return velocityCheck && rotationCheck;
     }
 
 

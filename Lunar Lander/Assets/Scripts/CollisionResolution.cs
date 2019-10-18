@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 
 public class CollisionResolution : MonoBehaviour
 {
+    const int COLLISION_AMPLIFIER = 50;
+
     // This function gets the seperating velocity of two particles
     public static float CalculateSeparatingVelocity(CollisionHull2D shapeA, CollisionHull2D shapeB)
     {
@@ -14,7 +16,7 @@ public class CollisionResolution : MonoBehaviour
 
         // Return the dot product of both velocity and position
         // Since we are dealing with planes, there is no reason to check the X axis
-        return differenceOfPosition.y * differenceOfVelocity.y * 50;
+        return differenceOfPosition.y * differenceOfVelocity.y * COLLISION_AMPLIFIER;
     }
 
 
@@ -65,11 +67,13 @@ public class CollisionResolution : MonoBehaviour
         float impulse = deltaVelocity / totalInverseMass;
         Vector2 impulsePerIMass = collision.normal * impulse;
 
+        ExecuteEvents.Execute<CollisionEvent>(PlayerController.player.gameObject, null, (x, y) => x.HandleCollision(collision.a, collision.b));
+
         // Apply the new velocities to both particles
         collision.a.GetComponent<Particle2D>().velocity = collision.a.GetComponent<Particle2D>().velocity + impulsePerIMass * collision.a.GetComponent<Particle2D>().invMass;
         collision.b.GetComponent<Particle2D>().velocity = collision.b.GetComponent<Particle2D>().velocity + impulsePerIMass * -collision.b.GetComponent<Particle2D>().invMass;
 
-        ExecuteEvents.Execute<CollisionEvent>(PlayerController.player.gameObject, null, (x, y) => x.HandleCollision(collision.a, collision.b));
+        
 
     }
 

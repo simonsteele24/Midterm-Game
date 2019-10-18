@@ -624,6 +624,8 @@ MonoBehaviour:
   amountOfFuelLostPerBurn: 0.1
   maximumHorizontalSpeedToPass: 6
   maximumVerticalSpeedToPass: 6
+  maximumRotationToPass: 20
+  minimumRotationToPass: -20
   maxRotation: 180
   initialStartingSpot: {x: 0, y: 0}
 --- !u!114 &551777951
