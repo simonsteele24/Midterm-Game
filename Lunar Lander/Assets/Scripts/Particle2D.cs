@@ -87,7 +87,10 @@ public class Particle2D : MonoBehaviour
     private void FixedUpdate()
     {
         // Change position to the positional variables
-        transform.position = position;
+        if (!float.IsNaN(position.x))
+        {
+            transform.position = position;
+        }
 
         // Apply all torque forces to particle
         for (int i = 0; i < torqueForces.Length; i++)

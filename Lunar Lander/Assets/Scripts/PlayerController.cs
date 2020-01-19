@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
 {
     // Singleton Instances
     public static PlayerController player;
+    public GameObject explosion;
 
     // Particle classes
     private Particle2D particle;
@@ -23,13 +24,14 @@ public class PlayerController : MonoBehaviour, CollisionEvent
     public float speed;
     public float thrustSpeed;
     public float startingHorizontalVelocity;
-    public float fuelLeft;
+    public float startingFuelLeft;
     public float amountOfFuelLostPerBurn;
     public float maximumHorizontalSpeedToPass = 5.0f;
     public float maximumVerticalSpeedToPass = 5.0f;
     public float maximumRotationToPass = 10.0f;
     public float minimumRotationToPass = -170.0f;
     public float maxRotation = 180.0f;
+    [HideInInspector] public float fuelLeft;
 
     // Vector 2's
     [HideInInspector] public Vector2 initialStartingSpot;
@@ -94,7 +96,7 @@ public class PlayerController : MonoBehaviour, CollisionEvent
         }
 
         // Has the W key been pressed and there is enough fuel?
-        if (Input.GetKey(KeyCode.W) && fuelLeft > 0)
+        if (Input.GetKey(KeyCode.W) && fuelLeft > 0 && GameManager.manager.isRunning)
         {
             // If yes, then subtract fuel
             fuelLeft -= amountOfFuelLostPerBurn;

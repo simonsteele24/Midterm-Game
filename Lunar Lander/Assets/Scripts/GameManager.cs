@@ -20,6 +20,7 @@ public class GameManager : MonoBehaviour
     // Integers
     int score;
     public int scoreAmountPerLanding = 100;
+    public int fuelDeductionWhenFailingToLand = 100;
 
     // Constant strings
     const string TITLE_TEXT = "Lunar Lander \n Press 'Space' To start";
@@ -61,6 +62,7 @@ public class GameManager : MonoBehaviour
         }
 
         // Add player back into game and reset it's transformation
+        PlayerController.player.GetComponent<Particle2D>().enabled = true;
         PlayerController.player.gameObject.SetActive(true);
         PlayerController.player.ResetPosition();
     }
@@ -124,6 +126,7 @@ public class GameManager : MonoBehaviour
             // If yes, then initialize and start up the game
             isRunning = true;
             player.SetActive(true);
+            PlayerController.player.fuelLeft = PlayerController.player.startingFuelLeft;
             PlayerController.player.ResetPosition();
             CommenceGame();
         }
@@ -151,14 +154,16 @@ public class GameManager : MonoBehaviour
             }
 
             // If no, reset the level
+            PlayerController.player.GetComponent<Particle2D>().enabled = false;
             UIManager.ui.ToggleTextObject(UIManager.GOOD_NAME, true);
             StartCoroutine(RestartLevel(status));
             score += scoreAmountPerLanding;
+            PlayerController.player.fuelLeft += scoreAmountPerLanding;
         }
         else
         {
             // If no, subtract from the overal fuel total 
-            PlayerController.player.fuelLeft -= 20;
+            PlayerController.player.fuelLeft -= fuelDeductionWhenFailingToLand;
 
             // If yes, has the game reached its endstate?
             if (CheckForEndState())
@@ -169,6 +174,7 @@ public class GameManager : MonoBehaviour
 
             // If no, reset the level
             UIManager.ui.ToggleTextObject(UIManager.BAD_NAME, true);
+            Instantiate(PlayerController.player.explosion, PlayerController.player.transform.position, Quaternion.identity);
             StartCoroutine(RestartLevel(status));
         }
     }
@@ -188,8 +194,7 @@ public class GameManager : MonoBehaviour
             isInEndGame = true;
             isRunning = false;
 
-            // Clear player from screen
-            PlayerController.player.gameObject.SetActive(false);
+            Instantiate(PlayerController.player.explosion, PlayerController.player.transform.position, Quaternion.identity);
 
             // Report to rest of class
             return true;
